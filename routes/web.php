@@ -16,8 +16,8 @@ Route::get('/', function () {
     return redirect('feed');
 });
 
-Route::resource('feed', 'FeedController');
-Route::resource('pizza', 'PizzaController');
+//Route::resource('feed', 'FeedController');
+//Route::resource('pizza', 'PizzaController');
 
 /*Route::get('/prueba', function() {
 

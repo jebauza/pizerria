@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Ingrediente;
 use Illuminate\Http\Request;
 
 class IngredienteController extends Controller
@@ -12,8 +13,9 @@ class IngredienteController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
+    {       
+        $ingredientes = Ingrediente::all();
+        return $ingredientes
     }
 
     /**
@@ -34,7 +36,21 @@ class IngredienteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+        $rules = [
+            'nombre'=>'required',
+            'precio'=>'required|numeric',
+         ];
+         $msgError = [
+            'nombre.required'=>'El nombre es requerido',
+            'precio'=>'El precio es requerido',
+        ];
+        $validation = Validator::make($data, $rules,$msgError);
+        if ($validation->fails()){
+            return response()->json($validation->errors()->all());
+        }
+        $new_ingrediente = Ingrediente::create($request->all());
+        return $new_ingrediente;
     }
 
     /**
@@ -45,7 +61,8 @@ class IngredienteController extends Controller
      */
     public function show($id)
     {
-        //
+        $ingrediente = Ingrediente::find($id);
+        return $ingrediente;
     }
 
     /**
@@ -68,7 +85,22 @@ class IngredienteController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+        $rules = [
+            'nombre'=>'required',
+            'precio'=>'required|numeric',
+         ];
+         $msgError = [
+            'nombre.required'=>'El nombre es requerido',
+            'precio'=>'El precio es requerido',
+        ];
+        $validation = Validator::make($data, $rules,$msgError);
+        if ($validation->fails()){
+            return response()->json($validation->errors()->all());
+        }
+        $ingrediente = Ingrediente::find($id);
+        $ingrediente ->fill($request->all())->save();
+        return $ingrediente;
     }
 
     /**
@@ -79,6 +111,7 @@ class IngredienteController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $ingrediente = Ingrediente::find($id);
+        $ingrediente->delete();
     }
 }

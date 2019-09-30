@@ -21,13 +21,16 @@ class PizzaController extends Controller
         foreach($pizzas as $p)
         {
             $precioP = 0;
+            $informacionP = "Ingredientes: ";
             foreach($p->ingredientes as $ingrediente)
             {
                 $precioP += $ingrediente->precio;
+                $informacionP .= $ingrediente->nombre.",";
             }
             $precioP += $precioP/2;
             $listas_pizzas_informacion[]= [
                 "nombre"=> $p->nombre,
+                "informacion" => $informacionP,
                 "imagen"=> $p->imagen,
                 "precio"=> $precioP
             ] ;
@@ -61,29 +64,22 @@ class PizzaController extends Controller
             $path = Storage::disk('public')->put('image',$file);
             $imagen = asset($path);
         }
-        $validator = request()->validate([
-            'name'=>'required',
-            'last_name'=>'required',
-            'user_name'=>'required',
-            'email'=>'required',
-            'birth_date'=>'required',
-            'id_role'=>'required',
-            'password'=>'required',
-        ],[
-            'name.required'=>'El nombre es requerido',
-            'last_name.required'=>'El nombre es requerido',
-            'email.required'=>'El nombre es requerido',
-            'birth_date.required'=>'El nombre es requerido',
-            'id_role.required'=>'El nombre es requerido',
-            'password.required'=>'El nombre es requerido'
-        ]);
-        if ($validator->fails()){
-            //dd($validator->errors());
-            return response()->json($validator->errors()->all());
+        $data = $request->all();
+        $rules = [
+            'nombre'=>'required',
+            'imagen'=>'required',
+         ];
+         $msgError = [
+            'nombre.required'=>'El nombre es requerido',
+            'imagen.required'=>'La imagen es requerido',
+        ];
+        $validation = Validator::make($data, $rules,$msgError);
+        if ($validation->fails()){
+            return response()->json($validation->errors()->all());
         }
-        $this->validate($request,[ 'title'=>'required', 'body'=>'required', 'imagen'=>'required', 'source'=>'required', 'publisher'=>'required']);
-        $pizza = Pizza::create($request->all());
-        $pizza->fill(['image'=>$imagen])->save();
+        $new_pizza = Pizza::create($request->all());
+        $new_pizza->fill(['imagen'=>$image])->save();
+        return $new_pizza;
     }
 
     /**
@@ -94,7 +90,8 @@ class PizzaController extends Controller
      */
     public function show($id)
     {
-        //
+        $pizza = Pizza::find($id);
+        return $pizza;
     }
 
     /**
@@ -117,7 +114,29 @@ class PizzaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+        $rules = [
+            'nombre'=>'required',
+         ];
+         $msgError = [
+            'nombre.required'=>'El nombre es requerido',
+        ];
+        $validation = Validator::make($data, $rules,$msgError);
+        if ($validation->fails()){
+            return response()->json($validation->errors()->all());
+        }
+        $pizza = Pizza::find($id);
+        $imagen = $pizza->imagen;
+        if($request->file('imagen'))
+        {
+            $file = $request->file('imagen');
+            $nombre = $file->getClientOriginalName();
+            $path = Storage::disk('public')->put('image',$file);
+            $imagen = asset($path);
+        }
+        $pizza ->fill($request->all())->save();
+        $pizza->fill(['imagen'=>$imagen])->save();
+        return $pizza;
     }
 
     /**
@@ -128,6 +147,7 @@ class PizzaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $pizza = Pizza::find($id);
+        $pizza->delete();
     }
 }
