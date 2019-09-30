@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Ingrediente;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class IngredienteController extends Controller
 {
