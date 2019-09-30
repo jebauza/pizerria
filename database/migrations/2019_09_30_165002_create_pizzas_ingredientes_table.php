@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFeedsTable extends Migration
+class CreatePizzasIngredientesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,10 @@ class CreateFeedsTable extends Migration
      */
     public function up()
     {
-        Schema::create('feeds', function (Blueprint $table) {
+        Schema::create('pizzas_ingredientes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('title');
-            $table->text('body');
-            $table->string('image');
-            $table->string('source');
-            $table->string('publisher');
+            $table->integer('pizza_id');
+            $table->integer('ingrediente_id');
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ class CreateFeedsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('feeds');
+        Schema::dropIfExists('pizzas_ingredientes');
     }
 }
