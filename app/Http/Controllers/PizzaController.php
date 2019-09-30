@@ -80,8 +80,9 @@ class PizzaController extends Controller
         if ($validation->fails()){
             return response()->json($validation->errors()->all());
         }
+        $arrIngredientes = explode(",",$request->input('ingredientes_id'));
         $new_pizza = Pizza::create(array_merge($request->except('ingredientes_id'),['imagen'=>$imagen]) );
-        $new_pizza->ingredientes()->sync($request->input('ingredientes_id'));
+        $new_pizza->ingredientes()->sync($arrIngredientes);
         $new_pizza->fill(['imagen'=>$imagen])->save();
         return $new_pizza;
     }
