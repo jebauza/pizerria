@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Ingrediente;
 use App\Pizza;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 
 class PizzaController extends Controller
@@ -21,18 +22,18 @@ class PizzaController extends Controller
         foreach($pizzas as $p)
         {
             $precioP = 0;
-            $informacionP = "Ingredientes: ";
+            $ing = [];
             foreach($p->ingredientes as $ingrediente)
             {
                 $precioP += $ingrediente->precio;
-                $informacionP .= $ingrediente->nombre.",";
+                $ing[]= ["id"=>$ingrediente->id,"nombre"=>$ingrediente->nombre,"precio"=>$ingrediente->precio];
             }
             $precioP += $precioP/2;
             $listas_pizzas_informacion[]= [
                 "nombre"=> $p->nombre,
-                "informacion" => $informacionP,
                 "imagen"=> $p->imagen,
-                "precio"=> $precioP
+                "precio"=> $precioP,
+                "ingredientes" => $ing,
             ] ;
         }
         return $listas_pizzas_informacion;
@@ -68,17 +69,20 @@ class PizzaController extends Controller
         $rules = [
             'nombre'=>'required',
             'imagen'=>'required',
+            'ingredientes_id'=>'required'
          ];
          $msgError = [
             'nombre.required'=>'El nombre es requerido',
             'imagen.required'=>'La imagen es requerido',
+            'ingredientes_id.required'=>'Los ingredientes son requerido'
         ];
         $validation = Validator::make($data, $rules,$msgError);
         if ($validation->fails()){
             return response()->json($validation->errors()->all());
         }
-        $new_pizza = Pizza::create($request->all());
-        $new_pizza->fill(['imagen'=>$image])->save();
+        $new_pizza = Pizza::create(array_merge($request->except('ingredientes_id'),['imagen'=>$imagen]) );
+        $new_pizza->ingredientes()->sync($request->input('ingredientes_id'));
+        $new_pizza->fill(['imagen'=>$imagen])->save();
         return $new_pizza;
     }
 

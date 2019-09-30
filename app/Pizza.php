@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Pizza extends Model
 {
     protected $fillable = [
-        'nombre'
+        'nombre','imagen'
     ];
 
     protected $hidden = [
-        'created_at', 'updated_at','imagen'
+        'created_at', 'updated_at'
     ];
 
     public function ingredientes()
